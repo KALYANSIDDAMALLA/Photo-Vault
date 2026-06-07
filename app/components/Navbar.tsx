@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
-
 export default function Navbar() {
   const logout = async () => {
     await supabase.auth.signOut();
@@ -19,9 +20,14 @@ export default function Navbar() {
         <a href="/photoupload">Upload</a>
 
         <a href="/profile">Profile</a>
-
+        <Link href="/explore">Explore</Link>
+        <Link href="/trending">Trending</Link>
+        <Link href="/leaderboard">Leaderboard</Link>
+        <Link href="/search">Search</Link>
+        <Link href="/notifications">Notifications</Link>       
+        <Link href="/search">Search</Link>
+        <Link href="/drafts">Drafts</Link>
         <a href="/drafts">Drafts</a>
-
         <a href="/settings/profile">Settings</a>
 
         <button
