@@ -12,6 +12,7 @@ export default function PhotoPage() {
   const [likes, setLikes] = useState(0);
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [currentUserId, setCurrentUserId] = useState("");
 
   useEffect(() => {
     loadPhoto();
@@ -19,6 +20,12 @@ export default function PhotoPage() {
 
   const loadPhoto = async () => {
     const photoId = params.id as string;
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    setCurrentUserId(user?.id || "");
 
     const { data: photoData } = await supabase
       .from("photos")
@@ -72,14 +79,41 @@ export default function PhotoPage() {
       .eq("id", user.id)
       .single();
 
-    await supabase.from("comments").insert({
-      user_id: user.id,
-      photo_id: photo.id,
-      username: userProfile?.username,
-      content: newComment,
-    });
+    const { error } = await supabase
+      .from("comments")
+      .insert({
+        user_id: user.id,
+        photo_id: photo.id,
+        username: userProfile?.username,
+        content: newComment,
+      });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
 
     setNewComment("");
+    loadPhoto();
+  };
+
+  const deleteComment = async (commentId: string) => {
+    const confirmed = window.confirm(
+      "Delete this comment?"
+    );
+
+    if (!confirmed) return;
+
+    const { error } = await supabase
+      .from("comments")
+      .delete()
+      .eq("id", commentId);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
     loadPhoto();
   };
 
@@ -116,19 +150,38 @@ export default function PhotoPage() {
         <div className="mt-8">
 
           <h2 className="text-xl font-semibold mb-4">
-            Comments
+            Comments ({comments.length})
           </h2>
+
+          {comments.length === 0 && (
+            <p className="text-gray-500 mb-4">
+              No comments yet.
+            </p>
+          )}
 
           {comments.map((comment) => (
             <div
               key={comment.id}
-              className="bg-gray-900 p-3 rounded mb-2"
+              className="bg-gray-900 p-3 rounded mb-2 flex justify-between items-center"
             >
-              <span className="font-semibold">
-                {comment.username}
-              </span>
-              {" "}
-              {comment.content}
+              <div>
+                <span className="font-semibold">
+                  {comment.username}
+                </span>
+                {" "}
+                {comment.content}
+              </div>
+
+              {comment.user_id === currentUserId && (
+                <button
+                  onClick={() =>
+                    deleteComment(comment.id)
+                  }
+                  className="text-red-400 text-sm"
+                >
+                  Delete
+                </button>
+              )}
             </div>
           ))}
 
