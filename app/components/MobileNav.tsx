@@ -23,7 +23,7 @@ export default function MobileNav() {
       </Link>
 
       <Link href="/profile" className="flex flex-col items-center text-white">
-        <span className="text-xl">🙂</span>
+        <span className="text-xl">Profile</span>
       </Link>
 
     </div>
