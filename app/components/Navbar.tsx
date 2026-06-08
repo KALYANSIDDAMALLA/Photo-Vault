@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
+
 export default function Navbar() {
   const logout = async () => {
     await supabase.auth.signOut();
@@ -10,29 +10,40 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-black border-b border-gray-800 text-white">
-      <div className="max-w-6xl mx-auto px-6 py-4 flex gap-6 items-center">
+    <nav className="bg-black border-b border-gray-800 text-white sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-6">
 
-        <a href="/">Home</a>
+        <Link href="/" className="font-bold text-xl">
+          PhotoVault
+        </Link>
 
-        <a href="/dashboard">Dashboard</a>
+        <Link href="/explore">
+          Explore
+        </Link>
 
-        <a href="/photoupload">Upload</a>
+        <Link href="/trending">
+          Trending
+        </Link>
 
-        <a href="/profile">Profile</a>
-        <Link href="/explore">Explore</Link>
-        <Link href="/trending">Trending</Link>
-        <Link href="/leaderboard">Leaderboard</Link>
-        <Link href="/search">Search</Link>
-        <Link href="/notifications">Notifications</Link>       
-        <Link href="/search">Search</Link>
-        <Link href="/drafts">Drafts</Link>
-        <a href="/drafts">Drafts</a>
-        <a href="/settings/profile">Settings</a>
+        <Link href="/photoupload">
+          Upload
+        </Link>
+
+        <Link href="/search">
+          Search
+        </Link>
+
+        <Link href="/drafts">
+          Drafts
+        </Link>
+
+        <Link href="/profile">
+          Profile
+        </Link>
 
         <button
           onClick={logout}
-          className="ml-auto bg-red-600 px-4 py-2 rounded-lg"
+          className="ml-auto bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg"
         >
           Logout
         </button>
