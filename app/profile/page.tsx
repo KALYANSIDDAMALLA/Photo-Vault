@@ -96,8 +96,6 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="max-w-5xl mx-auto p-8">
-
-        <div className="flex justify-end mb-6">
         <div className="flex justify-end gap-3 mb-6">
 
   <Link
@@ -109,20 +107,10 @@ export default function ProfilePage() {
 
   <button
     onClick={handleLogout}
-    className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg"
-  >
-    Logout
+    className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg" >Logout
   </button>
 
 </div>
-          <button
-            onClick={handleLogout}
-            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg"
-          >
-            Logout
-          </button>
-        </div>
-
         <div className="flex flex-col md:flex-row items-center gap-8 mb-10">
 
           {profile?.avatar_url ? (
@@ -149,8 +137,7 @@ export default function ProfilePage() {
             </p>
             <Link
   href="/settings/profile"
-  className="inline-block mt-4 bg-white text-black px-4 py-2 rounded-lg"
->
+  className="inline-block mt-4 bg-white text-black px-4 py-2 rounded-lg">
   Edit Profile
 </Link>
             <div className="flex gap-8 mt-4">
