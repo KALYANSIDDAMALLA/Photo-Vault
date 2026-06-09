@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
 export default function ProfileSettingsPage() {
@@ -9,6 +9,35 @@ export default function ProfileSettingsPage() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (data) {
+        setUsername(data.username || "");
+        setBio(data.bio || "");
+        setIsPrivate(data.is_private || false);
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +52,7 @@ export default function ProfileSettingsPage() {
         return;
       }
 
-      let avatarUrl = null;
+      let avatarUrl: string | null = null;
 
       if (avatar) {
         const fileExt = avatar.name.split(".").pop();
@@ -47,14 +76,19 @@ export default function ProfileSettingsPage() {
         avatarUrl = data.publicUrl;
       }
 
+      const updateData: any = {
+        username,
+        bio,
+        is_private: isPrivate,
+      };
+
+      if (avatarUrl) {
+        updateData.avatar_url = avatarUrl;
+      }
+
       const { error } = await supabase
         .from("profiles")
-        .update({
-          username,
-          bio,
-          is_private: isPrivate,
-          avatar_url: avatarUrl,
-        })
+        .update(updateData)
         .eq("id", user.id);
 
       if (error) {
@@ -72,6 +106,7 @@ export default function ProfileSettingsPage() {
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="max-w-2xl mx-auto p-8">
+
         <h1 className="text-4xl font-bold mb-8">
           Edit Profile
         </h1>
@@ -101,7 +136,9 @@ export default function ProfileSettingsPage() {
             <input
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) =>
+                setUsername(e.target.value)
+              }
               placeholder="your_username"
               className="w-full p-3 rounded bg-gray-900"
             />
@@ -114,8 +151,10 @@ export default function ProfileSettingsPage() {
 
             <textarea
               value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell people about your photography..."
+              onChange={(e) =>
+                setBio(e.target.value)
+              }
+              placeholder="Tell people about yourself..."
               className="w-full p-3 rounded bg-gray-900 h-32"
             />
           </div>
@@ -125,7 +164,9 @@ export default function ProfileSettingsPage() {
               <input
                 type="checkbox"
                 checked={isPrivate}
-                onChange={(e) => setIsPrivate(e.target.checked)}
+                onChange={(e) =>
+                  setIsPrivate(e.target.checked)
+                }
               />
               Private Account
             </label>
@@ -143,7 +184,9 @@ export default function ProfileSettingsPage() {
               {message}
             </div>
           )}
+
         </form>
+
       </div>
     </main>
   );
